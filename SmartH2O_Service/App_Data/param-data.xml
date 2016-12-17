@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sensors>
+  <sensor>
+    <data id="1" date="2002-05-30T09:00:00" type="PH" val="6.6" />
+  </sensor>
+  <sensor>
+    <data id="1" date="2002-05-30T09:00:00" type="PH" val="6.6" />
+  </sensor>
+</sensors>

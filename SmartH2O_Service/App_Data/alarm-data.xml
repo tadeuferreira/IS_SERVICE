@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<alarms>
+  <alarmTrigger>
+    <message alarmType="PH" sensorType="PH" sensorid="1" date="2016-12-17T03:52:14" val="5.1">Agua Acida</message>
+  </alarmTrigger>
+  <alarmTrigger>
+    <message alarmType="PH" sensorType="PH" sensorid="1" date="2016-12-17T03:59:14" val="2">Agua Acida</message>
+  </alarmTrigger>
+</alarms>

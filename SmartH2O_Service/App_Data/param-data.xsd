@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:element name="sensors" type="sensorsType"/>
+
+  <xs:complexType name="sensorsType">
+    <xs:sequence>
+      <xs:element name="sensor" type="sensorType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+ 
+
+  <xs:complexType name="sensorType">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="data" type="dataType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="dataType">
+    <xs:attribute name="id" type="xs:positiveInteger" use="required" />
+    <xs:attribute name="date" type="xs:dateTime" use="required" />
+    <xs:attribute name="type" type="categoryType" use="required" />
+    <xs:attribute name="val" type="xs:decimal" use="required" />
+  </xs:complexType>
+
+  <xs:simpleType	name="categoryType">
+    <xs:restriction	base="xs:string">
+      <xs:enumeration	value="PH"/>
+      <xs:enumeration	value="NH3"/>
+      <xs:enumeration	value="CI2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:simpleType name="numberType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="3"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
