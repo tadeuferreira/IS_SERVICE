@@ -17,7 +17,7 @@
   </xs:complexType>
 
   <xs:complexType name="dataType">
-    <xs:attribute name="id" type="xs:positiveInteger" use="required" />
+    <xs:attribute name="id" type="numberType" use="required" />
     <xs:attribute name="date" type="xs:dateTime" use="required" />
     <xs:attribute name="type" type="categoryType" use="required" />
     <xs:attribute name="val" type="xs:decimal" use="required" />
@@ -30,8 +30,7 @@
       <xs:enumeration	value="CI2"/>
     </xs:restriction>
   </xs:simpleType>
-
-
+  
   <xs:simpleType name="numberType">
     <xs:restriction base="xs:integer">
       <xs:minInclusive value="1"/>

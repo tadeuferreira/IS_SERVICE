@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
@@ -9,7 +10,8 @@ using System.Text;
 namespace SmartH2O_Service
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "IService1" in both code and config file together.
-    [ServiceContract]
+    [ServiceKnownType(typeof(Alarm))]
+    [ServiceContract()]
     public interface ISmartH2O_Service
     {
         // TODO: Add your service operations here
@@ -19,37 +21,121 @@ namespace SmartH2O_Service
         void PutAlarm(string xml);
 
         [OperationContract]
-        string GetParamHourly(string day);
+        ParamVals GetParamHourly(string day);
         [OperationContract]
-        string GetParamDaily(string startDay , string endDay);
+        ParamVals GetParamDaily(string startDay , string endDay);
         [OperationContract]
-        string GetParamWeekly(string week);
+        ParamVals GetParamWeekly(string day);
         [OperationContract]
-        string GetAlarmDaily(string day);
+        IList<Alarm> GetAlarmDaily(string day);
         [OperationContract]
-        string GetAlarmInterval(string startDay, string endDay);
+        IList<Alarm> GetAlarmInterval(string startDay, string endDay);
     }
-
-
     // Use a data contract as illustrated in the sample below to add composite types to service operations.
     [DataContract]
-    public class CompositeType
+    public class ParamVals
     {
-        bool boolValue = true;
-        string stringValue = "Hello ";
+        double[] min;
+        double[] max;
+        double[] average;
+
+        public ParamVals(double[] min, double[] max, double[] average)
+        {
+            this.min = min;
+            this.max = max;
+            this.average = average;
+        }
+           
 
         [DataMember]
-        public bool BoolValue
+        public double[] Min
         {
-            get { return boolValue; }
-            set { boolValue = value; }
+            get { return min; }
+        }
+        [DataMember]
+        public double[] Max
+        {
+            get { return max; }
+        }
+        [DataMember]
+        public double[] Average
+        {
+            get { return average; }
+        }
+    }
+    [DataContract]
+    public class Alarm
+    {
+        string alarmType;
+        string sensorType;
+        int sensorId;
+        DateTime date;
+        double value;
+        double triggerValue;
+        double lowerTriggerValue;
+        double higherTriggerValue;
+        string message;
+      
+        public Alarm( string alarmType, string sensorType, int sensorId, 
+            DateTime date, double value, double triggerValue, double lowerTriggerValue, double higherTriggerValue, string message)
+        {
+            this.alarmType = alarmType;
+            this.sensorType = sensorType;
+            this.sensorId = sensorId;
+            this.date = date;
+            this.value = value;
+            this.triggerValue = triggerValue;
+            this.lowerTriggerValue = lowerTriggerValue;
+            this.higherTriggerValue = higherTriggerValue;
+            this.message = message;
         }
 
+
         [DataMember]
-        public string StringValue
+        public string AlarmType
         {
-            get { return stringValue; }
-            set { stringValue = value; }
+            get { return alarmType; }
         }
+        [DataMember]
+        public string SensorType
+        {
+            get { return sensorType; }
+        }
+        [DataMember]
+        public int SensorId
+        {
+            get { return sensorId; }
+        }
+        [DataMember]
+        public DateTime Date
+        {
+            get { return date; }
+        }
+        [DataMember]
+        public double Value
+        {
+            get { return value; }
+        }
+        [DataMember]
+        public double TriggerValue
+        {
+            get { return triggerValue; }
+        }
+        [DataMember]
+        public double LowerTriggerValue
+        {
+            get { return lowerTriggerValue; }
+        }
+        [DataMember]
+        public double HigherTriggerValue
+        {
+            get { return higherTriggerValue; }
+        }
+        [DataMember]
+        public string Message
+        {
+            get { return message; }
+        }
+
     }
 }
