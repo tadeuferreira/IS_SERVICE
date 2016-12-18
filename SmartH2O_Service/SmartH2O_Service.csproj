@@ -92,7 +92,9 @@
     <Content Include="App_Data\alarm-data.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Data\param-data.xml" />
+    <Content Include="App_Data\param-data.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="SmartH2O_Service.svc" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

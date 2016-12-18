@@ -61,15 +61,12 @@ namespace SmartH2O_Service
                 DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
                 if (DateTime.Compare(dts, dtStart) >= 0 && DateTime.Compare(dts, dtEnd) <= 0)
                 {
-             /*       alarms.Add(new AlarmInfo(node.Attributes["alarmType"].Value,
-                         node.Attributes["sensorType"].Value,
-                         int.Parse(node.Attributes["sensorid"].Value),
-                         node.Attributes["date"].Value,
-                         Double.Parse(node.Attributes["val"].Value),
-                         node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? Double.Parse(node.Attributes["triggerValue"].Value) : 0,
-                         node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
-                         node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["higherTriggerValue"].Value) : 0,
-                         node.InnerText));*/
+                    alarms.Add(new AlarmInfo(dts, int.Parse(node.Attributes["sensorid"].Value), node.Attributes["sensorType"].Value,
+                              node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0,
+                              node.Attributes["alarmType"].Value,
+                              node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
+                              node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0,
+                              node.InnerText));
                 }
             }
 
