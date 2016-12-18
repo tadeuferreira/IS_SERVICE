@@ -55,7 +55,7 @@ namespace SmartH2O_Service
             List<AlarmInfo> alarms = new List<AlarmInfo>();
             XmlNodeList allAlarms = docAlarmData.SelectNodes("/alarms/alarmTrigger/message");
 
-            for (int i = 0; i < alarms.Count; i++)
+            for (int i = 0; i < allAlarms.Count; i++)
             {
                 XmlNode node = allAlarms.Item(i);
                 DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
