@@ -116,7 +116,13 @@
     <None Include="App_Data\alarm-data.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="App_Data\alarm-trigger.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="App_Data\param-data.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App_Data\sensor.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Web.Debug.config">

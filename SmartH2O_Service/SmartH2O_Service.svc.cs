@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 using System.Xml;
+using System.Xml.Schema;
 
 namespace SmartH2O_Service
 {
@@ -31,14 +32,21 @@ namespace SmartH2O_Service
                 DateTime dtaux = dts.Date;
                 if (DateTime.Compare(dtaux, dt) == 0)
                 {
-                    int id = int.Parse(node.Attributes["sensorid"].Value);
-                    string sType = node.Attributes["sensorType"].Value;
-                    float trigger = node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0;
-                    string aType = node.Attributes["alarmType"].Value;
-                    float lower = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0;
-                    float higher = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0;
-                    string m = node.InnerText;
-                         alarms.Add(new AlarmInfo(dts,id,sType,trigger,aType,lower,higher,m));
+                    try
+                    {
+                        int id = int.Parse(node.Attributes["sensorid"].Value);
+                        string sType = node.Attributes["sensorType"].Value;
+                        float trigger = node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0;
+                        string aType = node.Attributes["alarmType"].Value;
+                        float lower = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0;
+                        float higher = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0;
+                        string m = node.InnerText;
+                        alarms.Add(new AlarmInfo(dts, id, sType, trigger, aType, lower, higher, m));
+                    }catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                                  
                 }
             }
             return alarms.ToArray<AlarmInfo>();
@@ -63,12 +71,22 @@ namespace SmartH2O_Service
                 DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
                 if (DateTime.Compare(dts, dtStart) >= 0 && DateTime.Compare(dts, dtEnd) <= 0)
                 {
-                    alarms.Add(new AlarmInfo(dts, int.Parse(node.Attributes["sensorid"].Value), node.Attributes["sensorType"].Value,
-                              node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0,
-                              node.Attributes["alarmType"].Value,
-                              node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
-                              node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0,
-                              node.InnerText));
+                    try
+                    {
+                        int id = int.Parse(node.Attributes["sensorid"].Value);
+                        string sType = node.Attributes["sensorType"].Value;
+                        float trigger = node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0;
+                        string aType = node.Attributes["alarmType"].Value;
+                        float lower = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0;
+                        float higher = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0;
+                        string m = node.InnerText;
+                        alarms.Add(new AlarmInfo(dts, id, sType, trigger, aType, lower, higher, m));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+
                 }
             }
 
@@ -355,32 +373,68 @@ namespace SmartH2O_Service
         public void PutAlarm(string xml)
         {
             string alarmDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xml";
-            string paramDataXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xsd";
+            string alarmDataXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xsd";
+            string alarmTriggerXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\sensor.xsd";
 
             XmlDocument docAlarmData = new XmlDocument();
             docAlarmData.Load(alarmDataXML);
 
             XmlDocument docTrigger = new XmlDocument();
             docTrigger.LoadXml(xml);
-
-            //check if there is a root
-            XmlNode root = docAlarmData.SelectSingleNode("/alarms");
-            if (root == null)
+            Boolean isValid = false;
+            try
             {
-                XmlElement rootEl = docAlarmData.CreateElement("alarms");
-                docAlarmData.AppendChild(rootEl);
-                root = docAlarmData.SelectSingleNode("/alarms");
+                isValid = true;
+                ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
+                docTrigger.Schemas.Add(null, alarmTriggerXSD);
+                docTrigger.Validate(eventH);
+            }
+            catch (XmlException)
+            {
+                isValid = false;
             }
 
-            XmlNode triggerEl = docAlarmData.ImportNode(docTrigger.SelectSingleNode("/alarmTrigger"), true);
-            root.AppendChild(triggerEl);
-            docAlarmData.Save(alarmDataXML);
+            if (isValid)
+            {
+                //check if there is a root
+                XmlNode root = docAlarmData.SelectSingleNode("/alarms");
+                if (root == null)
+                {
+                    XmlElement rootEl = docAlarmData.CreateElement("alarms");
+                    docAlarmData.AppendChild(rootEl);
+                    root = docAlarmData.SelectSingleNode("/alarms");
+                }
+
+                XmlNode triggerEl = docAlarmData.ImportNode(docTrigger.SelectSingleNode("/alarmTrigger"), true);
+                root.AppendChild(triggerEl);
+               
+
+                Boolean isValidinner = false;
+                try
+                {
+                    isValidinner = true;
+                    ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
+                    docAlarmData.Schemas.Add(null, alarmDataXSD);
+                    docAlarmData.Validate(eventH);
+                }
+                catch (XmlException)
+                {
+                    isValidinner = false;
+                }
+
+                if (isValidinner)
+                {
+                    docAlarmData.Save(alarmDataXML);
+                }
+            }
+          
         }
 
         public void PutParam(string xml)
         {
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             string paramDataXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xsd";
+            string sensorXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\sensor.xsd";
 
             XmlDocument docParamData = new XmlDocument();
             docParamData.Load(paramDataXML);
@@ -388,18 +442,57 @@ namespace SmartH2O_Service
             XmlDocument docSensor = new XmlDocument();
             docSensor.LoadXml(xml);
 
-            //check if there is a root
-            XmlNode root = docParamData.SelectSingleNode("/sensors");
-            if (root == null)
+            Boolean isValid = false;
+            try
             {
-                XmlElement rootEl = docParamData.CreateElement("sensors");
-                docParamData.AppendChild(rootEl);
-                root = docParamData.SelectSingleNode("/sensors");
+                isValid = true;
+                ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
+                docSensor.Schemas.Add(null, sensorXSD);
+                docSensor.Validate(eventH);
+            }
+            catch (XmlException)
+            {
+                isValid = false;
             }
 
-            XmlNode sensorElement = docParamData.ImportNode(docSensor.SelectSingleNode("/sensor"), true);
-            root.AppendChild(sensorElement);
-            docParamData.Save(paramDataXML);
+            if (isValid)
+            {
+                //check if there is a root
+                XmlNode root = docParamData.SelectSingleNode("/sensors");
+                if (root == null)
+                {
+                    XmlElement rootEl = docParamData.CreateElement("sensors");
+                    docParamData.AppendChild(rootEl);
+                    root = docParamData.SelectSingleNode("/sensors");
+                }
+
+                XmlNode sensorElement = docParamData.ImportNode(docSensor.SelectSingleNode("/sensor"), true);
+                root.AppendChild(sensorElement);
+
+                Boolean isValidinner = false;
+                try
+                {
+                    isValidinner = true;
+                    ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
+                    docParamData.Schemas.Add(null, paramDataXSD);
+                    docParamData.Validate(eventH);
+                }
+                catch (XmlException)
+                {
+                    isValidinner = false;
+                }
+
+                if (isValidinner)
+                {
+                    docParamData.Save(paramDataXML);
+                }  
+            }
+
+        }
+
+        private void MyEvent(object sender, ValidationEventArgs e)
+        {
+            //ValidationMessage = "Invalida Document! -->" + e.Message;
         }
     }
 }

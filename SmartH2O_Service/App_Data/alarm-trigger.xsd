@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="alarmTrigger" type="alarmTriggerType"/>
+ 
+  <xs:complexType name="alarmTriggerType">
+    <xs:sequence>
+      <xs:element maxOccurs="1" name="message" type="messageType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="messageType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="alarmType" type="categoryAlarmType" use="required" />
+        <xs:attribute name="sensorType" type="categorySensorType" use="required" />
+        <xs:attribute name="sensorid" type="numberType" use="required" />
+        <xs:attribute name="date" type="xs:dateTime" use="required" />
+        <xs:attribute name="val" type="xs:float" use="optional" />
+        <xs:attribute name="triggerValue" type="xs:float" use="optional" />
+        <xs:attribute name="lowerTriggerValue" type="xs:float" use="optional" />
+        <xs:attribute name="higherTriggerValue" type="xs:float" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType	name="categoryAlarmType">
+    <xs:restriction	base="xs:string">
+      <xs:enumeration	value="ALARM_EQUALS"/>
+      <xs:enumeration	value="ALARM_MAX"/>
+      <xs:enumeration	value="ALARM_MIN"/>
+      <xs:enumeration	value="ALARM_INTERVAL"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType	name="categorySensorType">
+    <xs:restriction	base="xs:string">
+      <xs:enumeration	value="PH"/>
+      <xs:enumeration	value="NH3"/>
+      <xs:enumeration	value="CI2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="numberType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="3"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
