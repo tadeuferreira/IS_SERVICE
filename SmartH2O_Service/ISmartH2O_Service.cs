@@ -21,15 +21,15 @@ namespace SmartH2O_Service
         void PutAlarm(string xml);
 
         [OperationContract]
-        ParamVals GetParamHourly(string day);
+        ParamVals GetParamHourly(DateTime dt);
         [OperationContract]
-        ParamVals GetParamDaily(string startDay , string endDay);
+        ParamVals GetParamDaily(DateTime dtStart, DateTime dtEnd);
         [OperationContract]
-        ParamVals GetParamWeekly(string day);
+        ParamVals GetParamWeekly(DateTime dt);
         [OperationContract]
-        List<AlarmInfo> GetAlarmDaily(string day);
+        AlarmInfo[] GetAlarmDaily(DateTime dt);
         [OperationContract]
-        List<AlarmInfo> GetAlarmInterval(string startDay, string endDay);
+        AlarmInfo[] GetAlarmInterval(DateTime dtStart, DateTime dtEnd);
     }
     // Use a data contract as illustrated in the sample below to add composite types to service operations.
     [DataContract]

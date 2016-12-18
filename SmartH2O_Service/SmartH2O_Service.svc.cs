@@ -13,14 +13,13 @@ namespace SmartH2O_Service
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class SmartH2O_Service : ISmartH2O_Service
     {
-        public List<AlarmInfo> GetAlarmDaily(string day)
+        public AlarmInfo[] GetAlarmDaily(DateTime dt)
         {
             string alarmDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xml";
             XmlDocument docAlarmData = new XmlDocument();
             docAlarmData.Load(alarmDataXML);
-
-            DateTime dt = Convert.ToDateTime(day);
-          List<AlarmInfo> alarms = new List<AlarmInfo>();
+            List<AlarmInfo> alarms = new List<AlarmInfo>();
+            dt = dt.Date;
 
             XmlNodeList allAlarms = docAlarmData.SelectNodes("/alarms/alarmTrigger/message");
 
@@ -42,18 +41,16 @@ namespace SmartH2O_Service
                           node.InnerText));
                 }
             }
-            return alarms;
+            return alarms.ToArray<AlarmInfo>();
         }
 
-        public List<AlarmInfo> GetAlarmInterval(string startDay, string endDay)
+        public AlarmInfo[] GetAlarmInterval(DateTime dtStart, DateTime dtEnd)
         {
             string alarmDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xml";
             XmlDocument docAlarmData = new XmlDocument();
             docAlarmData.Load(alarmDataXML);
 
-            DateTime dtStart = Convert.ToDateTime(startDay);
             dtStart = dtStart.Date;
-            DateTime dtEnd = Convert.ToDateTime(endDay);
             dtEnd = dtEnd.Date.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
             int totalDays = (int)Math.Truncate((dtEnd - dtStart).TotalDays) + 1;
 
@@ -78,19 +75,18 @@ namespace SmartH2O_Service
                 }
             }
 
-            return alarms;
+            return alarms.ToArray();
         }
 
-        public ParamVals GetParamDaily(string startDay, string endDay)
+        public ParamVals GetParamDaily(DateTime dtStart, DateTime dtEnd)
         {
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             XmlDocument docParamData = new XmlDocument();
             docParamData.Load(paramDataXML);
-
-            DateTime dtStart = Convert.ToDateTime(startDay);
+           
             dtStart = dtStart.Date;
-            DateTime dtEnd = Convert.ToDateTime(endDay);
             dtEnd = dtEnd.Date.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
+
             int totalDays = (int)Math.Truncate((dtEnd - dtStart).TotalDays) +1;
             if ((dtEnd - dtStart).TotalDays <= 0)
                 return null;
@@ -155,13 +151,12 @@ namespace SmartH2O_Service
             return new ParamVals(min, max, average);
         }
 
-        public ParamVals GetParamHourly(string day)
+        public ParamVals GetParamHourly(DateTime dt)
         {
 
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             XmlDocument docParamData = new XmlDocument();
             docParamData.Load(paramDataXML);
-            DateTime dt = Convert.ToDateTime(day);
 
             XmlNodeList allSensors = docParamData.SelectNodes("/sensors/sensor/data");
             LinkedList<XmlNode> daySensors = new LinkedList<XmlNode>();
@@ -222,13 +217,13 @@ namespace SmartH2O_Service
             return new ParamVals(min,max,average);
         }
 
-        public ParamVals GetParamWeekly(string day)
+        public ParamVals GetParamWeekly(DateTime dt)
         {
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             XmlDocument docParamData = new XmlDocument();
             docParamData.Load(paramDataXML);
 
-            DateTime dtEnd = Convert.ToDateTime(day);
+            DateTime dtEnd = dt.Date;
             DateTime dtStart = dtEnd.AddDays(-6);
             dtStart = dtStart.Date; // meter 0:0:0
             dtEnd = dtEnd.Date.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
@@ -250,7 +245,7 @@ namespace SmartH2O_Service
                 }
             }
 
-            DateTime dt = new DateTime(dtStart.Year, dtStart.Month, dtStart.Day);
+            dt = new DateTime(dtStart.Year, dtStart.Month, dtStart.Day);
 
             double[] max = new double[totalDays];
             double[] min = new double[totalDays];
