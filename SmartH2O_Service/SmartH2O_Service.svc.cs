@@ -13,14 +13,14 @@ namespace SmartH2O_Service
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class SmartH2O_Service : ISmartH2O_Service
     {
-        public IList<Alarm> GetAlarmDaily(string day)
+        public List<AlarmInfo> GetAlarmDaily(string day)
         {
             string alarmDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xml";
             XmlDocument docAlarmData = new XmlDocument();
             docAlarmData.Load(alarmDataXML);
 
             DateTime dt = Convert.ToDateTime(day);
-            LinkedList<Alarm> alarms = new LinkedList<Alarm>();
+          List<AlarmInfo> alarms = new List<AlarmInfo>();
 
             XmlNodeList allAlarms = docAlarmData.SelectNodes("/alarms/alarmTrigger/message");
 
@@ -31,23 +31,54 @@ namespace SmartH2O_Service
                 DateTime dtaux = dts.Date;
                 if (DateTime.Compare(dtaux, dt) == 0)
                 {
-                    alarms.AddLast(new Alarm(node.Attributes["alarmType"].Value, 
-                        node.Attributes["sensorType"].Value, 
-                        int.Parse(node.Attributes["sensorid"].Value),
-                        dts, Double.Parse(node.Attributes["val"].Value),
-                        node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? Double.Parse(node.Attributes["triggerValue"].Value) : 0,
-                        node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
-                        node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["higherTriggerValue"].Value) : 0, 
-                        node.InnerText));
+                    alarms.Add(new AlarmInfo(node.Attributes["alarmType"].Value, 
+                          node.Attributes["sensorType"].Value, 
+                          int.Parse(node.Attributes["sensorid"].Value),
+                          node.Attributes["date"].Value, 
+                          Double.Parse(node.Attributes["val"].Value),
+                          node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? Double.Parse(node.Attributes["triggerValue"].Value) : 0,
+                          node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
+                          node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["higherTriggerValue"].Value) : 0, 
+                          node.InnerText));
+                }
+            }
+            return alarms;
+        }
+
+        public List<AlarmInfo> GetAlarmInterval(string startDay, string endDay)
+        {
+            string alarmDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xml";
+            XmlDocument docAlarmData = new XmlDocument();
+            docAlarmData.Load(alarmDataXML);
+
+            DateTime dtStart = Convert.ToDateTime(startDay);
+            dtStart = dtStart.Date;
+            DateTime dtEnd = Convert.ToDateTime(endDay);
+            dtEnd = dtEnd.Date.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
+            int totalDays = (int)Math.Truncate((dtEnd - dtStart).TotalDays) + 1;
+
+            List<AlarmInfo> alarms = new List<AlarmInfo>();
+            XmlNodeList allAlarms = docAlarmData.SelectNodes("/alarms/alarmTrigger/message");
+
+            for (int i = 0; i < alarms.Count; i++)
+            {
+                XmlNode node = allAlarms.Item(i);
+                DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
+                if (DateTime.Compare(dts, dtStart) >= 0 && DateTime.Compare(dts, dtEnd) <= 0)
+                {
+                    alarms.Add(new AlarmInfo(node.Attributes["alarmType"].Value,
+                         node.Attributes["sensorType"].Value,
+                         int.Parse(node.Attributes["sensorid"].Value),
+                         node.Attributes["date"].Value,
+                         Double.Parse(node.Attributes["val"].Value),
+                         node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? Double.Parse(node.Attributes["triggerValue"].Value) : 0,
+                         node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
+                         node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["higherTriggerValue"].Value) : 0,
+                         node.InnerText));
                 }
             }
 
-            return alarms.ToList();
-        }
-
-        public IList<Alarm> GetAlarmInterval(string startDay, string endDay)
-        {
-            throw new NotImplementedException();
+            return alarms;
         }
 
         public ParamVals GetParamDaily(string startDay, string endDay)

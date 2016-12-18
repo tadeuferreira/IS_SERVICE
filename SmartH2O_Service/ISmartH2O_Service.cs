@@ -10,7 +10,7 @@ using System.Text;
 namespace SmartH2O_Service
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "IService1" in both code and config file together.
-    [ServiceKnownType(typeof(Alarm))]
+    [ServiceKnownType(typeof(AlarmInfo))]
     [ServiceContract()]
     public interface ISmartH2O_Service
     {
@@ -27,9 +27,9 @@ namespace SmartH2O_Service
         [OperationContract]
         ParamVals GetParamWeekly(string day);
         [OperationContract]
-        IList<Alarm> GetAlarmDaily(string day);
+        List<AlarmInfo> GetAlarmDaily(string day);
         [OperationContract]
-        IList<Alarm> GetAlarmInterval(string startDay, string endDay);
+        List<AlarmInfo> GetAlarmInterval(string startDay, string endDay);
     }
     // Use a data contract as illustrated in the sample below to add composite types to service operations.
     [DataContract]
@@ -63,21 +63,22 @@ namespace SmartH2O_Service
             get { return average; }
         }
     }
+
     [DataContract]
-    public class Alarm
+    public class AlarmInfo
     {
         string alarmType;
         string sensorType;
         int sensorId;
-        DateTime date;
+        string date;
         double value;
         double triggerValue;
         double lowerTriggerValue;
         double higherTriggerValue;
         string message;
       
-        public Alarm( string alarmType, string sensorType, int sensorId, 
-            DateTime date, double value, double triggerValue, double lowerTriggerValue, double higherTriggerValue, string message)
+        public AlarmInfo( string alarmType, string sensorType, int sensorId, 
+            string date, double value, double triggerValue, double lowerTriggerValue, double higherTriggerValue, string message)
         {
             this.alarmType = alarmType;
             this.sensorType = sensorType;
@@ -107,7 +108,7 @@ namespace SmartH2O_Service
             get { return sensorId; }
         }
         [DataMember]
-        public DateTime Date
+        public string Date
         {
             get { return date; }
         }
