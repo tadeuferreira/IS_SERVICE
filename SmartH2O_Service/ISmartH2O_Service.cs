@@ -21,11 +21,11 @@ namespace SmartH2O_Service
         void PutAlarm(string xml);
 
         [OperationContract]
-        ParamVals GetParamHourly(DateTime dt);
+        ParamVals[] GetParamHourly(DateTime dt);
         [OperationContract]
-        ParamVals GetParamDaily(DateTime dtStart, DateTime dtEnd);
+        ParamVals[] GetParamDaily(DateTime dtStart, DateTime dtEnd);
         [OperationContract]
-        ParamVals GetParamWeekly(DateTime dt);
+        ParamVals[] GetParamWeekly(DateTime dt);
         [OperationContract]
         AlarmInfo[] GetAlarmDaily(DateTime dt);
         [OperationContract]
@@ -35,108 +35,128 @@ namespace SmartH2O_Service
     [DataContract]
     public class ParamVals
     {
+        string type;
+        int id;
         double[] min;
         double[] max;
         double[] average;
-
-        public ParamVals(double[] min, double[] max, double[] average)
-        {
-            this.min = min;
-            this.max = max;
-            this.average = average;
-        }
-           
 
         [DataMember]
         public double[] Min
         {
             get { return min; }
+            set { min = value; }
         }
+
         [DataMember]
         public double[] Max
         {
             get { return max; }
+            set { max = value; }
         }
         [DataMember]
         public double[] Average
         {
             get { return average; }
+            set { average = value; }
+        }
+        [DataMember]
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+        [DataMember]
+        public int Id
+        {
+            get { return id; }
+            set { id = value; }
         }
     }
 
     [DataContract]
     public class AlarmInfo
     {
-        string alarmType;
-        string sensorType;
-        int sensorId;
-        string date;
-        double value;
-        double triggerValue;
-        double lowerTriggerValue;
-        double higherTriggerValue;
+        DateTime datetime;
         string message;
-      
-        public AlarmInfo( string alarmType, string sensorType, int sensorId, 
-            string date, double value, double triggerValue, double lowerTriggerValue, double higherTriggerValue, string message)
+        int id;
+        string type;
+        float triggerValue;
+        string triggerType;
+        float lowerBound;
+        float upperBound;
+
+        public AlarmInfo(DateTime datetime, int id, string type, float triggerValue, string triggerType, float lowerBound, float upperBound, string message)
         {
-            this.alarmType = alarmType;
-            this.sensorType = sensorType;
-            this.sensorId = sensorId;
-            this.date = date;
-            this.value = value;
-            this.triggerValue = triggerValue;
-            this.lowerTriggerValue = lowerTriggerValue;
-            this.higherTriggerValue = higherTriggerValue;
-            this.message = message;
+            Datetime = datetime;
+            Id = id;
+            Type = type;
+            TriggerValue = triggerValue;
+            TriggerType = triggerType;
+            LowerBound = lowerBound;
+            UpperBound = upperBound;
+            Message = message;
         }
 
+        public AlarmInfo() { }
 
-        [DataMember]
-        public string AlarmType
-        {
-            get { return alarmType; }
-        }
-        [DataMember]
-        public string SensorType
-        {
-            get { return sensorType; }
-        }
-        [DataMember]
-        public int SensorId
-        {
-            get { return sensorId; }
-        }
-        [DataMember]
-        public string Date
-        {
-            get { return date; }
-        }
-        [DataMember]
-        public double Value
-        {
-            get { return value; }
-        }
-        [DataMember]
-        public double TriggerValue
-        {
-            get { return triggerValue; }
-        }
-        [DataMember]
-        public double LowerTriggerValue
-        {
-            get { return lowerTriggerValue; }
-        }
-        [DataMember]
-        public double HigherTriggerValue
-        {
-            get { return higherTriggerValue; }
-        }
+
         [DataMember]
         public string Message
         {
             get { return message; }
+            set { message = value; }
+        }
+
+        [DataMember]
+        public int Id
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        [DataMember]
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+        [DataMember]
+        public float TriggerValue
+        {
+            get { return triggerValue; }
+            set { triggerValue = value; }
+        }
+
+        [DataMember]
+        public DateTime Datetime
+        {
+            get { return datetime; }
+            set { datetime = value; }
+        }
+
+        [DataMember]
+        public string TriggerType
+        {
+            get { return triggerType; }
+            set { triggerType = value; }
+        }
+
+        [DataMember]
+        public float LowerBound
+        {
+            get { return lowerBound; }
+            set { lowerBound = value; }
+        }
+
+        [DataMember]
+        public float UpperBound
+        {
+            get { return upperBound; }
+            set { upperBound = value; }
         }
 
     }
+
 }

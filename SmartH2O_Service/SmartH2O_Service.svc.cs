@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -30,15 +31,12 @@ namespace SmartH2O_Service
                 DateTime dtaux = dts.Date;
                 if (DateTime.Compare(dtaux, dt) == 0)
                 {
-                    alarms.Add(new AlarmInfo(node.Attributes["alarmType"].Value, 
-                          node.Attributes["sensorType"].Value, 
-                          int.Parse(node.Attributes["sensorid"].Value),
-                          node.Attributes["date"].Value, 
-                          Double.Parse(node.Attributes["val"].Value),
-                          node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? Double.Parse(node.Attributes["triggerValue"].Value) : 0,
-                          node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
-                          node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["higherTriggerValue"].Value) : 0, 
-                          node.InnerText));
+                    alarms.Add(new AlarmInfo(dts, int.Parse(node.Attributes["sensorid"].Value),node.Attributes["sensorType"].Value,
+                        node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0, 
+                        node.Attributes["alarmType"].Value,
+                        node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
+                        node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0,
+                        node.InnerText));
                 }
             }
             return alarms.ToArray<AlarmInfo>();
@@ -63,7 +61,7 @@ namespace SmartH2O_Service
                 DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
                 if (DateTime.Compare(dts, dtStart) >= 0 && DateTime.Compare(dts, dtEnd) <= 0)
                 {
-                    alarms.Add(new AlarmInfo(node.Attributes["alarmType"].Value,
+             /*       alarms.Add(new AlarmInfo(node.Attributes["alarmType"].Value,
                          node.Attributes["sensorType"].Value,
                          int.Parse(node.Attributes["sensorid"].Value),
                          node.Attributes["date"].Value,
@@ -71,26 +69,26 @@ namespace SmartH2O_Service
                          node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? Double.Parse(node.Attributes["triggerValue"].Value) : 0,
                          node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["lowerTriggerValue"].Value) : 0,
                          node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? Double.Parse(node.Attributes["higherTriggerValue"].Value) : 0,
-                         node.InnerText));
+                         node.InnerText));*/
                 }
             }
 
             return alarms.ToArray();
         }
 
-        public ParamVals GetParamDaily(DateTime dtStart, DateTime dtEnd)
+        public ParamVals[] GetParamDaily(DateTime dtStart, DateTime dtEnd)
         {
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             XmlDocument docParamData = new XmlDocument();
             docParamData.Load(paramDataXML);
-           
+
             dtStart = dtStart.Date;
             dtEnd = dtEnd.Date.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
 
-            int totalDays = (int)Math.Truncate((dtEnd - dtStart).TotalDays) +1;
+            int totalDays = (int)Math.Truncate((dtEnd - dtStart).TotalDays) + 1;
             if ((dtEnd - dtStart).TotalDays <= 0)
                 return null;
- 
+
             XmlNodeList allSensors = docParamData.SelectNodes("/sensors/sensor/data");
             LinkedList<XmlNode> daySensors = new LinkedList<XmlNode>();
 
@@ -105,18 +103,28 @@ namespace SmartH2O_Service
             }
 
             DateTime dt = new DateTime(dtStart.Year, dtStart.Month, dtStart.Day);
-
-            double[] max = new double[totalDays];
-            double[] min = new double[totalDays];
-            for (int i = 0; i < totalDays; i++)
+            ParamVals[] paramsvals = new ParamVals[3];
+            for (int i = 0; i < 3; i++)
             {
-                min[i] = 1337.1337;
+                ParamVals p = new ParamVals();
+                p.Id = i + 1;
+                p.Max = new double[totalDays];
+                p.Min = new double[totalDays];
+                for (int j = 0; j < totalDays; j++)
+                    p.Min[j] = 1337.1337;
+                p.Average = new double[totalDays];
+                paramsvals[i] = p;
             }
-            double[] average = new double[totalDays];
+
+            int[][] count = new int[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                count[i] = new int[totalDays];
+            }
+
             for (int i = 0; i < totalDays; i++)
             {
                 LinkedList<XmlNode> aux = new LinkedList<XmlNode>();
-
                 foreach (XmlNode node in daySensors)
                 {
                     DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
@@ -124,34 +132,45 @@ namespace SmartH2O_Service
                     {
                         aux.AddLast(node);
                         double val = Double.Parse(node.Attributes["val"].Value);
-                        if (max[i] < val)
+                        int id = int.Parse(node.Attributes["id"].Value);
+                        string type = node.Attributes["type"].Value;
+                        ParamVals p = paramsvals[id - 1];
+                        p.Type = type;
+                        p.Id = id;
+
+                        if (p.Max[i] < val)
                         {
-                            max[i] = val;
+                            p.Max[i] = val;
                         }
-                        if (min[i] > val)
+                        if (p.Min[i] > val)
                         {
-                            min[i] = val;
+                            p.Min[i] = val;
                         }
-                        average[i] += val;
+                        p.Average[i] += val;
+                        count[id - 1][i]++;
                     }
                 }
-                if (average[i] != 0)
-                    average[i] = average[i] / aux.Count;
+
+                for (int j = 0; j < 3; j++)
+                {
+                    ParamVals p = paramsvals[j];
+                    if (p.Average[i] != 0)
+                        p.Average[i] = p.Average[i] / count[j][i];
+                    if (p.Min[i] == 1337.1337)
+                        p.Min[i] = 0;
+
+                }
                 foreach (XmlNode node in aux)
                 {
                     daySensors.Remove(node);
                 }
                 dt = dt.AddDays(1);
             }
-            for (int i = 0; i < totalDays; i++)
-            {
-                if (min[i] == 1337.1337)
-                    min[i] = 0;
-            }
-            return new ParamVals(min, max, average);
+
+            return paramsvals;
         }
 
-        public ParamVals GetParamHourly(DateTime dt)
+        public ParamVals[] GetParamHourly(DateTime dt)
         {
 
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
@@ -162,27 +181,38 @@ namespace SmartH2O_Service
             LinkedList<XmlNode> daySensors = new LinkedList<XmlNode>();
 
 
-            for(int i = 0; i<allSensors.Count; i++)
+            for (int i = 0; i < allSensors.Count; i++)
             {
                 DateTime dts = Convert.ToDateTime(allSensors.Item(i).Attributes["date"].Value);
-                if(dt.Day == dts.Day && dt.Month == dts.Month && dt.Year == dts.Year)
+                if (dt.Day == dts.Day && dt.Month == dts.Month && dt.Year == dts.Year)
                 {
                     daySensors.AddLast(allSensors.Item(i));
                 }
             }
 
             dt = dt.Date.AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
-            double[] max = new double[24];
-            double[] min = new double[24];
-            for (int i = 0; i < 24; i++)
+
+            ParamVals[] paramsvals = new ParamVals[3];
+            for (int i = 0; i < 3; i++)
             {
-                min[i] = 1337.1337;
+                ParamVals p = new ParamVals();
+                p.Id = i + 1;
+                p.Max = new double[24];
+                p.Min = new double[24];
+                for (int j = 0; j < 24; j++)
+                    p.Min[j] = 1337.1337;
+                p.Average = new double[24];
+                paramsvals[i] = p;
             }
-            double[] average = new double[24];
+            int[][] count = new int[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                count[i] = new int[24];
+            }
+
             for (int i = 0; i < 24; i++)
             {
                 LinkedList<XmlNode> aux = new LinkedList<XmlNode>();
-                
                 foreach (XmlNode node in daySensors)
                 {
                     DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
@@ -190,34 +220,45 @@ namespace SmartH2O_Service
                     {
                         aux.AddLast(node);
                         double val = Double.Parse(node.Attributes["val"].Value);
-                        if (max[i] < val)
+                        int id = int.Parse(node.Attributes["id"].Value);
+                        string type = node.Attributes["type"].Value;
+                        ParamVals p = paramsvals[id - 1];
+                        p.Type = type;
+                        p.Id = id;
+
+                        if (p.Max[i] < val)
                         {
-                            max[i] = val;
+                            p.Max[i] = val;
                         }
-                        if (min[i] > val)
+                        if (p.Min[i] > val)
                         {
-                            min[i] = val;
+                            p.Min[i] = val;
                         }
-                        average[i] += val;
+                        p.Average[i] += val;
+                        count[id - 1][i]++;
                     }
                 }
-                if(average[i] != 0)
-                average[i] = average[i] / aux.Count;
-                foreach(XmlNode node in aux)
+
+                for (int j = 0; j < 3; j++)
+                {
+                    ParamVals p = paramsvals[j];
+                    if (p.Average[i] != 0)
+                        p.Average[i] = p.Average[i] / count[j][i];
+                    if (p.Min[i] == 1337.1337)
+                        p.Min[i] = 0;
+
+                }
+                foreach (XmlNode node in aux)
                 {
                     daySensors.Remove(node);
                 }
                 dt = dt.AddHours(1);
             }
-            for (int i = 0; i < 24; i++)
-            {
-                if (min[i] == 1337.1337)
-                    min[i] = 0;              
-            }
-            return new ParamVals(min,max,average);
+
+            return paramsvals;
         }
 
-        public ParamVals GetParamWeekly(DateTime dt)
+        public ParamVals[] GetParamWeekly(DateTime dt)
         {
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             XmlDocument docParamData = new XmlDocument();
@@ -227,7 +268,7 @@ namespace SmartH2O_Service
             DateTime dtStart = dtEnd.AddDays(-6);
             dtStart = dtStart.Date; // meter 0:0:0
             dtEnd = dtEnd.Date.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
-           
+
             int totalDays = (int)Math.Truncate((dtEnd - dtStart).TotalDays) + 1;
             if ((dtEnd - dtStart).TotalDays <= 0)
                 return null;
@@ -246,18 +287,27 @@ namespace SmartH2O_Service
             }
 
             dt = new DateTime(dtStart.Year, dtStart.Month, dtStart.Day);
-
-            double[] max = new double[totalDays];
-            double[] min = new double[totalDays];
-            for (int i = 0; i < totalDays; i++)
+            ParamVals[] paramsvals = new ParamVals[3];
+            for (int i = 0; i < 3; i++)
             {
-                min[i] = 1337.1337;
+                ParamVals p = new ParamVals();
+                p.Id = i + 1;
+                p.Max = new double[7];
+                p.Min = new double[7];
+                for (int j = 0; j < 7; j++)
+                    p.Min[j] = 1337.1337;
+                p.Average = new double[7];
+                paramsvals[i] = p;
             }
-            double[] average = new double[totalDays];
-            for (int i = 0; i < totalDays; i++)
+            int[][] count = new int[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                count[i] = new int[7];
+            }
+
+            for (int i = 0; i < 7; i++)
             {
                 LinkedList<XmlNode> aux = new LinkedList<XmlNode>();
-
                 foreach (XmlNode node in daySensors)
                 {
                     DateTime dts = Convert.ToDateTime(node.Attributes["date"].Value);
@@ -265,31 +315,42 @@ namespace SmartH2O_Service
                     {
                         aux.AddLast(node);
                         double val = Double.Parse(node.Attributes["val"].Value);
-                        if (max[i] < val)
+                        int id = int.Parse(node.Attributes["id"].Value);
+                        string type = node.Attributes["type"].Value;
+                        ParamVals p = paramsvals[id - 1];
+                        p.Type = type;
+                        p.Id = id;
+
+                        if (p.Max[i] < val)
                         {
-                            max[i] = val;
+                            p.Max[i] = val;
                         }
-                        if (min[i] > val)
+                        if (p.Min[i] > val)
                         {
-                            min[i] = val;
+                            p.Min[i] = val;
                         }
-                        average[i] += val;
+                        p.Average[i] += val;
+                        count[id - 1][i]++;
                     }
                 }
-                if (average[i] != 0)
-                    average[i] = average[i] / aux.Count;
+
+                for (int j = 0; j < 3; j++)
+                {
+                    ParamVals p = paramsvals[j];
+                    if (p.Average[i] != 0)
+                        p.Average[i] = p.Average[i] / count[j][i];
+                    if (p.Min[i] == 1337.1337)
+                        p.Min[i] = 0;
+
+                }
                 foreach (XmlNode node in aux)
                 {
                     daySensors.Remove(node);
                 }
                 dt = dt.AddDays(1);
             }
-            for (int i = 0; i < totalDays; i++)
-            {
-                if (min[i] == 1337.1337)
-                    min[i] = 0;
-            }
-            return new ParamVals(min, max, average);
+
+            return paramsvals;
         }
 
         public void PutAlarm(string xml)
