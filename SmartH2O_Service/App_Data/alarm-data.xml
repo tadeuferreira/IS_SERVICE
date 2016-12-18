@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <alarms>
   <alarmTrigger>
     <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T06:57:14" val="5.6" lowerTriggerValue="1" higherTriggerValue="6">Agua Acida</message>
@@ -7,46 +7,15 @@
     <message alarmType="ALARM_EQUALS" sensorType="NH3" sensorid="2" date="2016-12-17T07:00:14" val="5.6" triggerValue="5.6">Agua com nivel alto de nh3</message>
   </alarmTrigger>
   <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
+    <message alarmType="ALARM_INTERVAL" sensorType="NH3" sensorid="2" date="2016-12-18T09:45:40" val="1.94" lowerTriggerValue="1" higherTriggerValue="5">Concentracao de NH3 ideal</message>
   </alarmTrigger>
   <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
+    <message alarmType="ALARM_MAX" sensorType="CI2" sensorid="3" date="2016-12-18T09:45:43" val="10.3" triggerValue="7">com valor superior ao máximo</message>
   </alarmTrigger>
   <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
+    <message alarmType="ALARM_INTERVAL" sensorType="CI2" sensorid="3" date="2016-12-18T09:45:43" val="10.3" lowerTriggerValue="7" higherTriggerValue="14">Agua impropria para consumo</message>
   </alarmTrigger>
   <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
+    <message alarmType="ALARM_MIN" sensorType="PH" sensorid="1" date="2016-12-18T09:45:46" val="5.7" triggerValue="6">com valor inferior ao minimo</message>
   </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-  <alarmTrigger>
-    <message alarmType="ALARM_INTERVAL" sensorType="PH" sensorid="1" date="2016-12-17T08:20:14" val="8" lowerTriggerValue="7.5" higherTriggerValue="14">Agua Alcalina</message>
-  </alarmTrigger>
-
 </alarms>
