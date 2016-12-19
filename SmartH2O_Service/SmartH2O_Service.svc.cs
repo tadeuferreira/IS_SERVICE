@@ -35,14 +35,16 @@ namespace SmartH2O_Service
                     try
                     {
                         int id = int.Parse(node.Attributes["sensorid"].Value);
+                        float sensorVal = float.Parse(node.Attributes["val"].Value);
                         string sType = node.Attributes["sensorType"].Value;
-                        float trigger = node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0;
+                        float triggerVal = node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0;
                         string aType = node.Attributes["alarmType"].Value;
                         float lower = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0;
                         float higher = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0;
                         string m = node.InnerText;
-                        alarms.Add(new AlarmInfo(dts, id, sType, trigger, aType, lower, higher, m));
-                    }catch(Exception ex)
+                        alarms.Add(new AlarmInfo(dts, id, sType, sensorVal, triggerVal, aType, lower, higher, m));
+                    }
+                    catch(Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
@@ -74,13 +76,14 @@ namespace SmartH2O_Service
                     try
                     {
                         int id = int.Parse(node.Attributes["sensorid"].Value);
+                        float sensorVal = float.Parse(node.Attributes["val"].Value);
                         string sType = node.Attributes["sensorType"].Value;
-                        float trigger = node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0;
+                        float triggerVal = node.Attributes["alarmType"].Value != "ALARM_INTERVAL" ? float.Parse(node.Attributes["triggerValue"].Value) : 0;
                         string aType = node.Attributes["alarmType"].Value;
                         float lower = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["lowerTriggerValue"].Value) : 0;
                         float higher = node.Attributes["alarmType"].Value == "ALARM_INTERVAL" ? float.Parse(node.Attributes["higherTriggerValue"].Value) : 0;
                         string m = node.InnerText;
-                        alarms.Add(new AlarmInfo(dts, id, sType, trigger, aType, lower, higher, m));
+                        alarms.Add(new AlarmInfo(dts, id, sType, sensorVal,triggerVal, aType, lower, higher, m));
                     }
                     catch (Exception ex)
                     {

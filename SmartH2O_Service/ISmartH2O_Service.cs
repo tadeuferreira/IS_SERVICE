@@ -81,16 +81,18 @@ namespace SmartH2O_Service
         string message;
         int id;
         string type;
+        float sensorVal;
         float triggerValue;
         string triggerType;
         float lowerBound;
         float upperBound;
 
-        public AlarmInfo(DateTime datetime, int id, string type, float triggerValue, string triggerType, float lowerBound, float upperBound, string message)
+        public AlarmInfo(DateTime datetime, int id, string type,float sensorVal, float triggerValue, string triggerType, float lowerBound, float upperBound, string message)
         {
             Datetime = datetime;
             Id = id;
             Type = type;
+            SensorVal = sensorVal;
             TriggerValue = triggerValue;
             TriggerType = triggerType;
             LowerBound = lowerBound;
@@ -98,14 +100,18 @@ namespace SmartH2O_Service
             Message = message;
         }
 
-        public AlarmInfo() { }
-
-
         [DataMember]
         public string Message
         {
             get { return message; }
             set { message = value; }
+        }
+
+        [DataMember]
+        public float SensorVal
+        {
+            get { return sensorVal; }
+            set { sensorVal = value; }
         }
 
         [DataMember]
