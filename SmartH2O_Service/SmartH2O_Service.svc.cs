@@ -56,10 +56,11 @@ namespace SmartH2O_Service
 
         public AlarmInfo[] GetAlarmInterval(DateTime dtStart, DateTime dtEnd)
         {
+            if (DateTime.Compare(dtStart, dtEnd) > 0)
+                return null;
             string alarmDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xml";
             XmlDocument docAlarmData = new XmlDocument();
             docAlarmData.Load(alarmDataXML);
-
             dtStart = dtStart.Date;
             dtEnd = dtEnd.Date.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
             int totalDays = (int)Math.Truncate((dtEnd - dtStart).TotalDays) + 1;
@@ -98,6 +99,8 @@ namespace SmartH2O_Service
 
         public ParamVals[] GetParamDaily(DateTime dtStart, DateTime dtEnd)
         {
+            if (DateTime.Compare(dtStart, dtEnd) > 0)
+                return null;
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             XmlDocument docParamData = new XmlDocument();
             docParamData.Load(paramDataXML);
