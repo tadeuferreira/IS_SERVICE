@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <sensors>
   <sensor>
     <data id="1" date="2016-11-24T05:17:12" type="PH" val="6.1" />
@@ -629,5 +629,14 @@
   </sensor>
   <sensor>
     <data id="3" date="2016-12-17T03:52:30" type="CI2" val="7.2" />
+  </sensor>
+  <sensor>
+    <data id="2" date="2016-12-19T01:55:55" type="NH3" val="1.77" />
+  </sensor>
+  <sensor>
+    <data id="2" date="2016-12-19T01:55:55" type="NH3" val="1.77" />
+  </sensor>
+  <sensor>
+    <data id="2" date="2016-12-19T01:55:55" type="NH3" val="1.77" />
   </sensor>
 </sensors>

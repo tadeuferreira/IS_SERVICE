@@ -448,21 +448,6 @@ namespace SmartH2O_Service
             XmlDocument docSensor = new XmlDocument();
             docSensor.LoadXml(xml);
 
-            Boolean isValid = false;
-            try
-            {
-                isValid = true;
-                ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
-                docSensor.Schemas.Add(null, sensorXSD);
-                docSensor.Validate(eventH);
-            }
-            catch (XmlException)
-            {
-                isValid = false;
-            }
-
-            if (isValid)
-            {
                 //check if there is a root
                 XmlNode root = docParamData.SelectSingleNode("/sensors");
                 if (root == null)
@@ -474,25 +459,10 @@ namespace SmartH2O_Service
 
                 XmlNode sensorElement = docParamData.ImportNode(docSensor.SelectSingleNode("/sensor"), true);
                 root.AppendChild(sensorElement);
-
-                Boolean isValidinner = false;
-                try
-                {
-                    isValidinner = true;
-                    ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
-                    docParamData.Schemas.Add(null, paramDataXSD);
-                    docParamData.Validate(eventH);
-                }
-                catch (XmlException)
-                {
-                    isValidinner = false;
-                }
-
-                if (isValidinner)
-                {
+     
                     docParamData.Save(paramDataXML);
-                }  
-            }
+       
+          
 
         }
 
