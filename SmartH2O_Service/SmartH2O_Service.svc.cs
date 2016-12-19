@@ -380,67 +380,32 @@ namespace SmartH2O_Service
         {
             string alarmDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xml";
             string alarmDataXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\alarm-data.xsd";
-            string alarmTriggerXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\sensor.xsd";
 
             XmlDocument docAlarmData = new XmlDocument();
             docAlarmData.Load(alarmDataXML);
 
             XmlDocument docTrigger = new XmlDocument();
             docTrigger.LoadXml(xml);
-            Boolean isValid = false;
-            try
+
+            //check if there is a root
+            XmlNode root = docAlarmData.SelectSingleNode("/alarms");
+            if (root == null)
             {
-                isValid = true;
-                ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
-                docTrigger.Schemas.Add(null, alarmTriggerXSD);
-                docTrigger.Validate(eventH);
-            }
-            catch (XmlException)
-            {
-                isValid = false;
+              XmlElement rootEl = docAlarmData.CreateElement("alarms");
+              docAlarmData.AppendChild(rootEl);
+              root = docAlarmData.SelectSingleNode("/alarms");
             }
 
-            if (isValid)
-            {
-                //check if there is a root
-                XmlNode root = docAlarmData.SelectSingleNode("/alarms");
-                if (root == null)
-                {
-                    XmlElement rootEl = docAlarmData.CreateElement("alarms");
-                    docAlarmData.AppendChild(rootEl);
-                    root = docAlarmData.SelectSingleNode("/alarms");
-                }
-
-                XmlNode triggerEl = docAlarmData.ImportNode(docTrigger.SelectSingleNode("/alarmTrigger"), true);
-                root.AppendChild(triggerEl);
+            XmlNode triggerEl = docAlarmData.ImportNode(docTrigger.SelectSingleNode("/alarmTrigger"), true);
+            root.AppendChild(triggerEl);
                
-
-                Boolean isValidinner = false;
-                try
-                {
-                    isValidinner = true;
-                    ValidationEventHandler eventH = new ValidationEventHandler(MyEvent);
-                    docAlarmData.Schemas.Add(null, alarmDataXSD);
-                    docAlarmData.Validate(eventH);
-                }
-                catch (XmlException)
-                {
-                    isValidinner = false;
-                }
-
-                if (isValidinner)
-                {
-                    docAlarmData.Save(alarmDataXML);
-                }
-            }
-          
+            docAlarmData.Save(alarmDataXML);           
         }
 
         public void PutParam(string xml)
         {
             string paramDataXML = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xml";
             string paramDataXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\param-data.xsd";
-            string sensorXSD = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"App_Data\sensor.xsd";
 
             XmlDocument docParamData = new XmlDocument();
             docParamData.Load(paramDataXML);
@@ -448,27 +413,19 @@ namespace SmartH2O_Service
             XmlDocument docSensor = new XmlDocument();
             docSensor.LoadXml(xml);
 
-                //check if there is a root
-                XmlNode root = docParamData.SelectSingleNode("/sensors");
-                if (root == null)
-                {
-                    XmlElement rootEl = docParamData.CreateElement("sensors");
-                    docParamData.AppendChild(rootEl);
-                    root = docParamData.SelectSingleNode("/sensors");
-                }
+            //check if there is a root
+            XmlNode root = docParamData.SelectSingleNode("/sensors");
+            if (root == null)
+            {
+              XmlElement rootEl = docParamData.CreateElement("sensors");
+              docParamData.AppendChild(rootEl);
+              root = docParamData.SelectSingleNode("/sensors");
+            }
 
-                XmlNode sensorElement = docParamData.ImportNode(docSensor.SelectSingleNode("/sensor"), true);
-                root.AppendChild(sensorElement);
+            XmlNode sensorElement = docParamData.ImportNode(docSensor.SelectSingleNode("/sensor"), true);
+            root.AppendChild(sensorElement);
      
-                    docParamData.Save(paramDataXML);
-       
-          
-
-        }
-
-        private void MyEvent(object sender, ValidationEventArgs e)
-        {
-            //ValidationMessage = "Invalida Document! -->" + e.Message;
+            docParamData.Save(paramDataXML);
         }
     }
 }
